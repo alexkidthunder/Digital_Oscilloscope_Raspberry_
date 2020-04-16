@@ -19,7 +19,6 @@ chOff = displayHight//2 # Channel Offset
 run = [True,False,False,True,False] # run controls
 expandT = 1 ; expandV = 1 # voltage & time expansion
 
-
 sampleTime = 17 # uS for 58KHz sample
 smples_cm = 32 * sampleTime
 volts_sample = 5/1024 # volts per sample
@@ -46,7 +45,7 @@ def main():
        while run[4]: # if in hold mode wait here
          checkForEvent()
       
-       
+#Desenha o GRID     
 def drawGrid():
    pygame.draw.rect(display,(240,240,240),(0,0,displayWidth,displayHight),0)
    for h in range(32,256,32): # draw horizontal
@@ -56,26 +55,23 @@ def drawGrid():
    pygame.draw.line(display,(0,0,0),(256,0),(256,256),1)
    pygame.draw.line(display,(0,0,0),(0,128),(512,128),1)
 
+#Nomes das caixas de marcar e indicadores
 def drawControls():
     drawWords("Ampliar Tempo",10,300,black,backCol)
     drawWords("Ampliar Voltagem",220,300,black,backCol)
     drawWords("Medir",440,300,black,backCol)
     drawWords("Tempo",440,320,black,backCol)
     drawWords("Volts",486,320,black,backCol)
-    drawWords("Salvar",540,300,black,backCol)
-    drawWords("Tempo",540,320,black,backCol)
-    drawWords("Volts",586,320,black,backCol)
     drawWords("1/"+chr(0x394)+"Tempo",540,257,black,backCol)
     drawWords(chr(0x394)+"Tempo",540,237,black,backCol)
-    drawWords("Tempo Salvo",540,217,black,backCol)
     drawWords("Tempo",540,197,black,backCol)
     drawWords(chr(0x394)+"Voltagem",540,167,black,backCol)
-    drawWords("Voltagem salva",540,147,black,backCol)
     drawWords("Voltagem",540,127,black,backCol)
     drawWords("Run Single Freeze Trigger",540,77,black,backCol)
     
     updateControls(True)
 
+#Atualizador
 def updateControls(blank):
     global vDisp
     if blank:
@@ -101,7 +97,7 @@ def updateControls(blank):
     if measureTime :
        t = (cursorT>>1)*sampleTime / expandT       
        drawWords(" "+trunk(t,5)+" "+chr(0x3bc)+"S",640,197,black,pramCol) # current time        
-       drawWords(" "+trunk(savedTime,5)+" "+chr(0x3bc)+"S",640,217,black,pramCol)
+       #drawWords(" "+trunk(savedTime,5)+" "+chr(0x3bc)+"S",640,217,black,pramCol)
        drawWords(" "+trunk(t-savedTime,5)+" "+chr(0x3bc)+"S",640,237,black,pramCol) # delta time
        if t-savedTime != 0 :
           drawWords((trunk(1000000 / abs(t-savedTime),5))+" Hz",640,257,black,pramCol)
@@ -109,7 +105,7 @@ def updateControls(blank):
        vDisp = (((1024-cursorV)>>2)-128)*volts_sample * vMag
        delta = vDisp - savedVoltage
        drawWords(" "+trunk(delta,4)+" V",640,167,black,pramCol) 
-       drawWords(" "+trunk(savedVoltage,4)+" V",640,147,black,pramCol)
+       #drawWords(" "+trunk(savedVoltage,4)+" V",640,147,black,pramCol)
        drawWords(" "+trunk(vDisp,4)+" V",640,127,black,pramCol)
        
 def trunk(value, place): # truncate a value string
@@ -119,13 +115,15 @@ def trunk(value, place): # truncate a value string
     else:
        v = v[0:place+1] # extra place for the minus sign
     return v   
-    
+
+#Quando clica ele fica marcado   
 def drawLED(n,state): # draw LED
     if state : 
         pygame.draw.rect(screen,(10,150,50),LedRect[n],0)
     else :   
         pygame.draw.rect(screen,(240,240,240),LedRect[n],0)
     
+#Caixas de marcar que modificam o solicitado
 def defineControls():
    global LedRect, resultsRect
    for n in range(0,6):
@@ -134,14 +132,15 @@ def defineControls():
        LedRect[n] = pygame.Rect((220+(n-6)*30,336),(15,15))
    LedRect[9] = pygame.Rect((440,336),(15,15))  # time
    LedRect[10] = pygame.Rect((486,336),(15,15)) # volts
-   LedRect[11] = pygame.Rect((540,336),(15,15)) # save time
-   LedRect[12] = pygame.Rect((586,336),(15,15)) # save volts
+   #LedRect[11] = pygame.Rect((540,336),(15,15)) # save time
+   #LedRect[12] = pygame.Rect((586,336),(15,15)) # save volts
    LedRect[13] = pygame.Rect((545,100),(15,15)) # run
    LedRect[14] = pygame.Rect((580,100),(15,15)) # single
    LedRect[15] = pygame.Rect((628,100),(15,15)) # freeze
    LedRect[16] = pygame.Rect((676,100),(15,15)) # trigger
    resultsRect = pygame.Rect((639,125),(90,153))
-    
+
+#Forma de onda
 def plotWave():
     global vMag
     lastX=0 ; lastY=0
@@ -174,10 +173,12 @@ def plotWave():
        for n in range(0,512,12):  
           pygame.draw.line(display,(255,128,0),(n,y),(n+6,y),1)
       
+#Desenha na tela
 def drawScope(): # put display onto scope controls
     screen.blit(display,(10,10))
     pygame.display.update()
-    
+
+#Desenha na tela as palavras
 def drawWords(words,x,y,col,backCol) :
     textSurface = font.render(words, True, col, backCol)
     textRect = textSurface.get_rect()
@@ -185,9 +186,10 @@ def drawWords(words,x,y,col,backCol) :
     textRect.top = y    
     screen.blit(textSurface, textRect)
 
-###################################################
+################################################### DEsenho das ondas
 def readArduino():  # get buffer and controls
     global cursorT, cursorV, triggerC, run
+    time.sleep(0.111) # let other code have a look in 
     if run[2]:  # if in freeze mode funnel data into junk
         for i in range(0, 1024):
             junk = random.randrange(0, 255, 1)
@@ -204,7 +206,7 @@ def readArduino():  # get buffer and controls
 
 ###################################################
 
-    
+# Evento do mouse quando clica
 def handleMouse(pos): # look at mouse down
    global expandT,expandV,measureTime,measureVolts,svLed,stLed
    global savedVoltsC, savedTimeC, run
@@ -253,6 +255,7 @@ def handleMouse(pos): # look at mouse down
        run[3] = not(run[3])       
    updateControls(False)
 
+# Evento do mouse quando solta
 def handleMouseUp(pos): # look at mouse up
    global savedVoltage,savedTime, svLed, stLed, run 
    if LedRect[12].collidepoint(pos) and measureVolts:
@@ -266,11 +269,13 @@ def handleMouseUp(pos): # look at mouse up
    if LedRect[14].collidepoint(pos): # single
        run[4] = False
        updateControls(False)
-    
+
+#Para finalizar o programa
 def terminate(): # close down the program
     pygame.quit() # close pygame
     os._exit(1)
-   
+
+#Para checar eventos no sistema 
 def checkForEvent(): # see if we need to quit
     event = pygame.event.poll()
     if event.type == pygame.QUIT :
@@ -286,6 +291,6 @@ def checkForEvent(): # see if we need to quit
         handleMouseUp(pygame.mouse.get_pos())                  
         
        
-# Main program logic:
+# Lógica principal
 if __name__ == '__main__':    
     main()
