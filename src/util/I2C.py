@@ -24,5 +24,6 @@ class I2C:
     def pegarvoltagem(self):#lightlevel
         Bvoltagem = self.__smbus.read_byte_data(self.__address, 1)
         #Transformando o binario para a respectiva voltagem
-        voltage = (5 * voltage_binary) / 256.0
+        voltage = (5 * Bvoltagem) / 256.0
+        print(voltage)
         return voltage
