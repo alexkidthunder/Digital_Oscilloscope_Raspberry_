@@ -22,7 +22,7 @@ expandT = 1 ; expandV = 1 # expanção inicial da voltagem e do tempo
 volts_sample = 5/1024 # volts por amostra
 measureVolts = False;savedVoltage = 0
 cursorT = 0; cursorV = 0; vMag = 1; svLed = False; stLed = False
-triggerC = 512 ; savedVoltsC = -1 
+savedVoltsC = -1 
 
 def main():
     pygame.draw.rect(screen,backCol,(0,0,screenWidth,screenHight+2),0)
@@ -57,15 +57,11 @@ def drawGrid():
 def drawControls():
     drawWords("Ampliar Tempo",10,300,black,backCol)
     drawWords("Ampliar Voltagem",220,300,black,backCol)
-    drawWords("Medir",440,300,black,backCol)
-    drawWords("Tempo",440,320,black,backCol)
-    drawWords("Volts",486,320,black,backCol)
-    drawWords("1/"+chr(0x394)+"Tempo",540,257,black,backCol)
-    drawWords(chr(0x394)+"Tempo",540,237,black,backCol)
-    drawWords("Tempo",540,197,black,backCol)
+    drawWords("Medir",470,300,black,backCol)
+    drawWords("Volts",470,320,black,backCol)
     drawWords(chr(0x394)+"Voltagem",540,167,black,backCol)
     drawWords("Voltagem",540,127,black,backCol)
-    drawWords("Run Single Freeze Trigger",540,77,black,backCol)
+    drawWords("Run Single Freeze ",540,77,black,backCol)
     
     updateControls(True)
 
@@ -84,8 +80,7 @@ def updateControls(blank):
     drawLED(10,measureVolts)
     
     for n in range(13,17):
-       drawLED(n,run[n-13])  
-   
+       drawLED(n,run[n-13])    
    
     if measureVolts :
        vDisp = (((1024-cursorV)>>2)-128)*volts_sample * vMag
@@ -120,7 +115,6 @@ def defineControls():
    LedRect[13] = pygame.Rect((545,100),(15,15)) # run
    LedRect[14] = pygame.Rect((580,100),(15,15)) # single
    LedRect[15] = pygame.Rect((628,100),(15,15)) # freeze
-   LedRect[16] = pygame.Rect((676,100),(15,15)) # trigger
    resultsRect = pygame.Rect((639,125),(90,153))
 
 #Forma de onda
@@ -147,10 +141,6 @@ def plotWave():
        if savedVoltsC != -1:
          for n in range(0,512,12):  
             pygame.draw.line(display,(255,0,0),(n,savedVoltsC),(n+6,savedVoltsC),1)
-    if run[3] : # use trigger
-       y = (triggerC-512)//vMag + chOff                                  
-       for n in range(0,512,12):  
-          pygame.draw.line(display,(255,128,0),(n,y),(n+6,y),1)
       
 #Desenha na tela
 def drawScope(): # put display onto scope controls
@@ -167,17 +157,16 @@ def drawWords(words,x,y,col,backCol) :
 
 ################################################### DEsenho das ondas
 def readData():  # get buffer and controls
-    global cursorT, cursorV, triggerC, run
+    global cursorT, cursorV, run
     time.sleep(0.111) # let other code have a look in 
-    if run[2]:  # if in freeze mode funnel data into junk
+    if run[2]:  # No modo freeze joga os dados no lixo
         for i in range(0, 1024):
-            junk = random.randrange(0, 255, 1)
+            junk = random.randrange(0, 255, 1) 
     else: # otherwise read into the buffer
         for i in range(0,512):
             inBuf[i] = random.randrange(0, 510, 1)
             cursorT = random.randrange(0, 255, 1)
             cursorV =  random.randrange(0, 255, 1)
-            triggerC = 1024 - random.randrange(0, 255, 1)
     if run[1]: #single sweep requested
         run[1] = False
         run[2] = True # put in freeze mode
@@ -225,9 +214,7 @@ def handleMouse(pos): # look at mouse down
        if not run[2]:
            run[0] = True
        else:
-           run[0] = False
-   if LedRect[16].collidepoint(pos): # trigger
-       run[3] = not(run[3])       
+           run[0] = False     
    updateControls(False)
 
 # Evento do mouse quando solta
