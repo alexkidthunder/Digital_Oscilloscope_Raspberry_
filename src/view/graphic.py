@@ -57,10 +57,8 @@ def drawGrid():
 def drawControls():
     drawWords("Ampliar Tempo",10,300,black,backCol)
     drawWords("Ampliar Voltagem",220,300,black,backCol)
-    drawWords("Medir",470,300,black,backCol)
-    drawWords("Volts",470,320,black,backCol)
-    drawWords(chr(0x394)+"Voltagem",540,167,black,backCol)
-    drawWords("Voltagem",540,127,black,backCol)
+    drawWords("Canal",470,300,black,backCol)
+    drawWords("2",490,320,black,backCol)
     drawWords("Run Single Freeze ",540,77,black,backCol)
     
     updateControls(True)
@@ -82,11 +80,6 @@ def updateControls(blank):
     for n in range(13,17):
        drawLED(n,run[n-13])    
    
-    if measureVolts :
-       vDisp = (((1024-cursorV)>>2)-128)*volts_sample * vMag
-       delta = vDisp - savedVoltage
-       drawWords(" "+trunk(delta,4)+" V",640,167,black,pramCol) 
-       drawWords(" "+trunk(vDisp,4)+" V",640,127,black,pramCol)
        
 def trunk(value, place): # truncate a value string
     v=str(value)+"000000"
@@ -136,11 +129,11 @@ def plotWave():
         lastY = y
         s += 1
     
-    if measureVolts :
-       pygame.draw.line(display,(255,0,0),(0,cursorV>>2), (512,cursorV>>2),1)
-       if savedVoltsC != -1:
-         for n in range(0,512,12):  
-            pygame.draw.line(display,(255,0,0),(n,savedVoltsC),(n+6,savedVoltsC),1)
+    #if measureVolts :
+     #  pygame.draw.line(display,(255,0,0),(0,cursorV>>2), (512,cursorV>>2),1)
+      # if savedVoltsC != -1:
+       #  for n in range(0,512,12):  
+        #    pygame.draw.line(display,(255,0,0),(n,savedVoltsC),(n+6,savedVoltsC),1)
       
 #Desenha na tela
 def drawScope(): # put display onto scope controls
@@ -155,7 +148,7 @@ def drawWords(words,x,y,col,backCol) :
     textRect.top = y    
     screen.blit(textSurface, textRect)
 
-################################################### DEsenho das ondas
+################################################### Formato das ondas
 def readData():  # get buffer and controls
     global cursorT, cursorV, run
     time.sleep(0.111) # let other code have a look in 
@@ -189,8 +182,7 @@ def handleMouse(pos): # look at mouse down
    if LedRect[10].collidepoint(pos):
        measureVolts = not(measureVolts) # toggle volts measurement
        if not measureVolts :
-           savedVoltsC = -1
-   
+           savedVoltsC = -1   
    
    if LedRect[12].collidepoint(pos) and measureVolts: # save volts
        svLed = True
