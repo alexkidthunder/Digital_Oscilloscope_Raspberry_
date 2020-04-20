@@ -15,16 +15,14 @@ pramCol = (135,206,235) # parameter colour
 displayWidth = 512 ; displayHight = 256
 LedRect = [ pygame.Rect((0,0),(0,0))]*17
 inBuf = [0]*512 # quick way of getting a 512 long buffer
-chOff = displayHight//2 # Channel Offset
+chOff = displayHight//4 # Channel Offset
 run = [True,False,False,True,False] # run controls
-expandT = 1 ; expandV = 1 # voltage & time expansion
+expandT = 1 ; expandV = 1 # expanção inicial da voltagem e do tempo 
 
-sampleTime = 17 # uS for 58KHz sample
-smples_cm = 32 * sampleTime
-volts_sample = 5/1024 # volts per sample
-measureTime = False ; measureVolts = False;savedTime = 0;savedVoltage = 0
+volts_sample = 5/1024 # volts por amostra
+measureVolts = False;savedVoltage = 0
 cursorT = 0; cursorV = 0; vMag = 1; svLed = False; stLed = False
-triggerC = 512 ; savedVoltsC = -1 ; savedTimeC = -1
+triggerC = 512 ; savedVoltsC = -1 
 
 def main():
     pygame.draw.rect(screen,backCol,(0,0,screenWidth,screenHight+2),0)
@@ -35,10 +33,10 @@ def main():
     while(1):
        time.sleep(0.001) # let other code have a look in 
 
-       readArduino() # get buffer data#####
+       readData() # get buffer data#####
 
        plotWave() # draw waveform           
-       if measureTime or measureVolts :
+       if  measureVolts :
           updateControls(True)  
        drawScope() # display new screen
        checkForEvent()
@@ -75,37 +73,24 @@ def drawControls():
 def updateControls(blank):
     global vDisp
     if blank:
-      pygame.draw.rect(screen,backCol,resultsRect,0)  
-    if expandT*smples_cm >= 1000:
-       drawWords("Tempo "+str((expandT*smples_cm)//1000)+"mS por divisao   ",10,280,black,backCol)
-    else:
-        drawWords("Tempo "+str(expandT*smples_cm)+"uS por divisao    ",10,280,black,backCol)
-    volts_cm = int(volts_sample*128*1000/expandV)
-    drawWords("Voltagem "+str(volts_cm)+"mV por divisao",220,280,black,backCol)
+      pygame.draw.rect(screen,backCol,resultsRect,0)      
     for n in range(0,6): # time option LED
        drawWords("x"+str(1<<n),10+n*30,320,black,backCol)
        drawLED(n,expandT == 1<<n)
     for n in range(6,9): # voltage options
        drawWords("x"+str(1<<(n-6)),220+(n-6)*30,320,black,backCol)
        drawLED(n,expandV == 1<<(n-6))       
-    drawLED(9,measureTime)
+    
     drawLED(10,measureVolts)
-    drawLED(11,stLed)
-    drawLED(12,svLed)
+    
     for n in range(13,17):
        drawLED(n,run[n-13])  
-    if measureTime :
-       t = (cursorT>>1)*sampleTime / expandT       
-       drawWords(" "+trunk(t,5)+" "+chr(0x3bc)+"S",640,197,black,pramCol) # current time        
-       #drawWords(" "+trunk(savedTime,5)+" "+chr(0x3bc)+"S",640,217,black,pramCol)
-       drawWords(" "+trunk(t-savedTime,5)+" "+chr(0x3bc)+"S",640,237,black,pramCol) # delta time
-       if t-savedTime != 0 :
-          drawWords((trunk(1000000 / abs(t-savedTime),5))+" Hz",640,257,black,pramCol)
+   
+   
     if measureVolts :
        vDisp = (((1024-cursorV)>>2)-128)*volts_sample * vMag
        delta = vDisp - savedVoltage
        drawWords(" "+trunk(delta,4)+" V",640,167,black,pramCol) 
-       #drawWords(" "+trunk(savedVoltage,4)+" V",640,147,black,pramCol)
        drawWords(" "+trunk(vDisp,4)+" V",640,127,black,pramCol)
        
 def trunk(value, place): # truncate a value string
@@ -132,8 +117,6 @@ def defineControls():
        LedRect[n] = pygame.Rect((220+(n-6)*30,336),(15,15))
    LedRect[9] = pygame.Rect((440,336),(15,15))  # time
    LedRect[10] = pygame.Rect((486,336),(15,15)) # volts
-   #LedRect[11] = pygame.Rect((540,336),(15,15)) # save time
-   #LedRect[12] = pygame.Rect((586,336),(15,15)) # save volts
    LedRect[13] = pygame.Rect((545,100),(15,15)) # run
    LedRect[14] = pygame.Rect((580,100),(15,15)) # single
    LedRect[15] = pygame.Rect((628,100),(15,15)) # freeze
@@ -158,11 +141,7 @@ def plotWave():
         lastX = n
         lastY = y
         s += 1
-    if measureTime :
-       pygame.draw.line(display,(0,0,255),(cursorT>>1,0), (cursorT>>1,256),1)
-       if savedTimeC != -1:
-         for n in range(0,256,12):  
-            pygame.draw.line(display,(0,0,255),(savedTimeC,n),(savedTimeC,n+6),1)
+    
     if measureVolts :
        pygame.draw.line(display,(255,0,0),(0,cursorV>>2), (512,cursorV>>2),1)
        if savedVoltsC != -1:
@@ -187,7 +166,7 @@ def drawWords(words,x,y,col,backCol) :
     screen.blit(textSurface, textRect)
 
 ################################################### DEsenho das ondas
-def readArduino():  # get buffer and controls
+def readData():  # get buffer and controls
     global cursorT, cursorV, triggerC, run
     time.sleep(0.111) # let other code have a look in 
     if run[2]:  # if in freeze mode funnel data into junk
@@ -197,7 +176,7 @@ def readArduino():  # get buffer and controls
         for i in range(0,512):
             inBuf[i] = random.randrange(0, 510, 1)
             cursorT = random.randrange(0, 255, 1)
-            cursorV = 1024 - random.randrange(0, 255, 1)
+            cursorV =  random.randrange(0, 255, 1)
             triggerC = 1024 - random.randrange(0, 255, 1)
     if run[1]: #single sweep requested
         run[1] = False
@@ -208,8 +187,8 @@ def readArduino():  # get buffer and controls
 
 # Evento do mouse quando clica
 def handleMouse(pos): # look at mouse down
-   global expandT,expandV,measureTime,measureVolts,svLed,stLed
-   global savedVoltsC, savedTimeC, run
+   global expandT,expandV,measureVolts,svLed
+   global savedVoltsC, run
    #print(pos)
    for n in range(0,6) :
       if LedRect[n].collidepoint(pos):
@@ -217,17 +196,13 @@ def handleMouse(pos): # look at mouse down
    for n in range(6,9) :
       if LedRect[n].collidepoint(pos): 
          expandV = 1<<(n-6)
-   if LedRect[9].collidepoint(pos): #toggle time measurement
-       measureTime = not(measureTime)
-       if not measureTime :
-         savedTimeC = -1  
+   
    if LedRect[10].collidepoint(pos):
        measureVolts = not(measureVolts) # toggle volts measurement
        if not measureVolts :
            savedVoltsC = -1
-   if LedRect[11].collidepoint(pos) and measureTime: # save time
-       stLed = True
-       savedTimeC = cursorT>>1
+   
+   
    if LedRect[12].collidepoint(pos) and measureVolts: # save volts
        svLed = True
        savedVoltsC = cursorV>>2
@@ -257,14 +232,10 @@ def handleMouse(pos): # look at mouse down
 
 # Evento do mouse quando solta
 def handleMouseUp(pos): # look at mouse up
-   global savedVoltage,savedTime, svLed, stLed, run 
+   global savedVoltage, svLed, run 
    if LedRect[12].collidepoint(pos) and measureVolts:
        savedVoltage = vDisp
        svLed = False
-       updateControls(False)
-   if LedRect[11].collidepoint(pos) and measureTime:
-       savedTime = (cursorT>>1)*sampleTime / expandT
-       stLed = False
        updateControls(False)
    if LedRect[14].collidepoint(pos): # single
        run[4] = False

@@ -1,4 +1,4 @@
-from util.I2C import I2C
+from model.I2C import I2C
 import time
 
 class controllerI2C():
