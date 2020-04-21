@@ -1,14 +1,14 @@
 from model.I2C import I2C
 import time
-import threading# Tentativa de utilizar Thread 
+import threading
 
 class controllerI2C(threading.Thread):
     def __init__(self):
-	threading.Thread.__init__(self)	 # inicializar a Thread        
-        self.__i2c = I2C()		 # Inicializar o emulador
-        self.__voltagemV = ([], [])
-	self.__max_index = 60
-        self.__indexes = [0, 0]        
+        threading.Thread.__init__(self)
+        self.__i2c = I2C()
+        self.__voltages = ([], [])
+        self.__indexes = [0, 0]
+        self.__max_index = 60
         self.__delay_time = 0.6
 
     def __atualizar_voltagem( self, channel=0, value=5 ):
