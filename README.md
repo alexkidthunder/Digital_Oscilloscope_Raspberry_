@@ -24,6 +24,6 @@ Foi utilizado o Python3.x, com isso, pra configurar execute usando ele.
 Quando terminar as configurações abra o local do arquivo no src e execute:
 > - No windows: python .\main.py
 > - No linux: python3 ./main.py
-Tendo em consideração que no linux as configurações tem que ser as seguintes:
+> - =>Tendo em consideração que para o linux as configurações tem que ser as seguintes:
 > - pip3 install pygame
 > - pip3 install PyQt5
