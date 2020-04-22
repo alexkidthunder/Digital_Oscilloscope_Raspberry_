@@ -6,7 +6,7 @@ class controllerI2C(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.__i2c = I2C()
-        self.__voltages = ([], [])
+        self.__voltagemV = ([], [])
         self.__indexes = [0, 0]
         self.__max_index = 60
         self.__delay_time = 0.6
@@ -23,10 +23,10 @@ class controllerI2C(threading.Thread):
     def _atualizar_lista_voltagem(self):
         self.__i2c.write(0x51)
         time.sleep(self.__delay_time)
-        channel_1 = self.__i2c.pegar_voltagem()
+        channel_1 = self.__i2c.pegarvoltagem()
         self.__atualizar_voltagem(0, channel_1)
         self.__i2c.write(0x51)
-        channel_2 = self.__i2c.pegar_voltagem()
+        channel_2 = self.__i2c.pegarvoltagem()
         self.__atualizar_voltagem(1, channel_2)
         
     def pegar_voltagem(self):
