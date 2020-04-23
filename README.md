@@ -27,10 +27,3 @@ Quando terminar as configurações abra o local do arquivo no src e execute:
 > - =>Tendo em consideração que para o linux as configurações tem que ser as seguintes:
 > - pip3 install pygame
 > - pip3 install PyQt5
-
-# Extra
-
-> -  PygameAplicationOscill, uma aplicação no qual somente necessita do pygame configurado. No qual apresenta as primeiras tentativas do testes da parte gráfica com especificas funções do YARPie e o desenho dos dados obtidos na tela.
-Para executar essa aplicação:
-> - No windows: python .\PygameAplicationOscill.py
-> - No linux: python3 ./PygameAplicationOscill.py
