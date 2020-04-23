@@ -9,7 +9,7 @@ class controllerI2C(threading.Thread):
         self.__voltagemV = ([], [])
         self.__indexes = [0, 0]
         self.__max_index = 60
-        self.__delay_time = 0.6
+        self.__delay_time = 0.15
 
     def __atualizar_voltagem( self, channel=0, value=5 ):
         self.__voltagemV[channel].append(value)
@@ -21,10 +21,12 @@ class controllerI2C(threading.Thread):
         self.__delay_time = value
 
     def _atualizar_lista_voltagem(self):
+        # Voltagem para o canal 1
         self.__i2c.write(0x51)
         time.sleep(self.__delay_time)
         channel_1 = self.__i2c.pegarvoltagem()
         self.__atualizar_voltagem(0, channel_1)
+        # Voltagem para o canal 2
         self.__i2c.write(0x51)
         channel_2 = self.__i2c.pegarvoltagem()
         self.__atualizar_voltagem(1, channel_2)

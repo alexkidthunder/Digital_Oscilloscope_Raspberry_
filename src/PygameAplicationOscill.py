@@ -16,6 +16,7 @@ displayWidth = 512 ; displayHight = 256
 LedRect = [ pygame.Rect((0,0),(0,0))]*17
 # Pegando um buffer com o tamnho de 512
 inBuf = [0]*512 # utilizado para pegar os dados e no desenho da onda
+inBuf2 = [0]*512 # utilizado para pegar os dados e no desenho da 2 onda
 run = [True,False,False,True,False] # run controles dos botões
 expandT = 1 ; expandV = 1 # expanção da voltagem e do tempo (y e x)
 vMag = 1
@@ -83,18 +84,21 @@ def defineControls():
 #   Desenho da forma de onda
 def plotWave():
     global vMag
-    lastX=0 ; lastY=0
-    vMag = 2 # ajustar a escala da voltagem 
-    if expandV == 1: #Escala da voltagem no eixo y
+    lastX=0 ; lastY=0 ; last2Y=0
+    vMag = 2 # Ajustar a escala da voltagem 
+    if expandV == 1: # Escala da voltagem no eixo y, eros no canal 2
         vMag = 4
     drawGrid()
-    s = 0 #  pointer
+    s = 0 #  Ponteiro
     for n in range(0, displayWidth, expandT):
         y = (512-inBuf[s])//vMag 
+        x = (512-inBuf2[s])//vMag * 2
         if n != 0:
             pygame.draw.line(display,(0,200,0),(lastX ,lastY), (n ,y ),2)
+            pygame.draw.line(display,(0,255,0),(lastX ,last2Y), (n ,x ),2)
         lastX = n
         lastY = y
+        last2Y = x
         s += 1   
       
 # Desenha na tela
@@ -120,8 +124,9 @@ def readData():  # pega o buffer e os controls
     else: # No run pega os dados e coloca no buffer
         for i in range(0,512):
             inBuf[i] = random.randrange(0, 510, 1)
+            inBuf2[i] = random.randrange(0, 255, 1)
             
-    if run[1]: #single sweep requested
+    if run[1]: # single sweep requested
         run[1] = False
         run[2] = True # put in freeze mode
         updateControls(True)

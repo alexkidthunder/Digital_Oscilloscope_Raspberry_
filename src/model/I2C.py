@@ -4,7 +4,7 @@ import random
 
 class I2C:
     def __init__(self):       
-        random.seed() #Random numero como light level
+        random.seed() #Random numero 
         self.__address = 0x70
         self.__smbus = GPIO.SMBus(0)     
         GPIO.add_autoreply(self.__address, 2, 5)
@@ -18,7 +18,7 @@ class I2C:
 
     def write(self,value):
         self.__smbus.write_byte_data(self.__address, 0, value)
-        GPIO.add_autoreply(self.__address, 1, random.randrange(0, 255, 1)) #Random numero pro registrador 1 (light level)
+        GPIO.add_autoreply(self.__address, 1, random.randrange(0, 510, 1)) #Random numero pro registrador 1 
         return -1
 
     def pegarvoltagem(self):#Envia os dados atravéz do read_byte_data
