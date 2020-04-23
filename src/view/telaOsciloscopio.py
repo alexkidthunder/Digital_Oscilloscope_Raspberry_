@@ -230,10 +230,10 @@ class telaOsciloscopio(object):
         Osciloscopio.setWindowTitle(_translate("Osciloscopio", "Osciloscópio"))
         self.channel_1_checkbox.setText(_translate("Osciloscopio", "Canal 1 - Verde"))
         self.channel_2_checkbox.setText(_translate("Osciloscopio", "Canal 2 - Amarelo"))
-        self.canal_1_v_escala_label.setText(_translate("Osciloscopio", "Escala Vertical(5mV)"))
-        self.canal_1_h_escala_label.setText(_translate("Osciloscopio", "Escala Horizontal"))
-        self.canal_2_escala_v_label.setText(_translate("Osciloscopio", "Escala Vertical(5mV)"))
-        self.canal_2_escala_h_label.setText(_translate("Osciloscopio", "Escala Horizontal"))
+        self.canal_1_v_escala_label.setText(_translate("Osciloscopio", "Escala Vertical (V/div)"))
+        self.canal_1_h_escala_label.setText(_translate("Osciloscopio", "Escala Horizontal(s/div)"))
+        self.canal_2_escala_v_label.setText(_translate("Osciloscopio", "Escala Vertical (V/div)"))
+        self.canal_2_escala_h_label.setText(_translate("Osciloscopio", "Escala Horizontal(s/div)"))
 
 if __name__ == "__main__":
     import sys
