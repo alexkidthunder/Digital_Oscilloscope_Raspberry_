@@ -9,7 +9,7 @@ textHeight=22 ; font = pygame.font.Font(None, textHeight)# Definindo tamanho de 
 screenWidth = 530 ; screenHight = 380# Definindo comprimento e largura da tela da aplicação
 screen = pygame.display.set_mode([screenWidth,screenHight],0,32)# Definindo o modelo de tela
 display = pygame.Surface((512,256))
-backCol = (155,96,100) ; black = (0,0,0) # Cor de fundo
+backCol = (1, 4, 150) ; colorW = (255, 255, 255) # Cor de fundo
 pramCol = (135,206,235) # Cor dos parametros
 
 displayWidth = 512 ; displayHight = 256
@@ -33,9 +33,9 @@ def drawGrid():
 
 #Nomes das caixas de marcar e indicadores
 def drawControls():
-    drawWords("Ampliar Tempo",10,300,black,backCol)
-    drawWords("Ampliar Voltagem",220,300,black,backCol)
-    drawWords("Run Single Freeze ",390,300,black,backCol)    
+    drawWords("Ampliar Tempo",10,300,colorW,backCol)
+    drawWords("Ampliar Voltagem",220,300,colorW,backCol)
+    drawWords("Run Single Freeze ",390,300,colorW,backCol)    
     updateControls(True)
 
 #Atualizador
@@ -43,10 +43,10 @@ def updateControls(blank):
     if blank:
       pygame.draw.rect(screen,backCol,resultsRect,0)      
     for n in range(0,6): # opções do botões do LED do tempo
-       drawWords("x"+str(1<<n),10+n*30,320,black,backCol)
+       drawWords("x"+str(1<<n),10+n*30,320,colorW,backCol)
        drawLED(n,expandT == 1<<n)
     for n in range(6,8): # opções da voltagem 
-       drawWords("x"+str(1<<(n-6)),220+(n-6)*30,320,black,backCol)
+       drawWords("x"+str(1<<(n-6)),220+(n-6)*30,320,colorW,backCol)
        drawLED(n,expandV == 1<<(n-6))      
     for n in range(13,17):
        drawLED(n,run[n-13])    
